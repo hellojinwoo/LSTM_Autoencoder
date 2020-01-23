@@ -14,7 +14,7 @@ from .autoencoders import RAE, SAE
 ####################
 # Data preparation #
 ####################
-def prepare_data(sequential_data) :
+def prepare_dataset(sequential_data) :
     if type(sequential_data) == pd.DataFrame:
         data_in_numpy = np.array(sequential_data)
         data_in_tensor = torch.tensor(data_in_numpy, dtype=torch.float)
