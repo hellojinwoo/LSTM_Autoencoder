@@ -27,7 +27,7 @@ final_loss
 
 ## API
 
-#### `TorchCoder.QuickEncode(input_sequences, embedding_dim, learning_rate, every_epoch_print, epochs, patience, max_grad_norm)`
+> __`TorchCoder.QuickEncode(input_sequences, embedding_dim, learning_rate, every_epoch_print, epochs, patience, max_grad_norm)`__
 
 Lets you train an autoencoder with just one line of code. This wraps a PyTorch implementation of an Encoder-Decoder architecture with an LSTM, making this optimal for sequences with long-term dependencies (e.g. time series data).
 
