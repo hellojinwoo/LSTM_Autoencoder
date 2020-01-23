@@ -8,13 +8,6 @@ from tqdm import tqdm_notebook as tqdm
 
 torch.manual_seed(0)
 
-###############
-# GPU Setting #
-###############
-os.environ["CUDA_VISIBLE_DEVICES"]="0"   # comment this line if you want to use all of your GPUs
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda:0" if use_cuda else "cpu")
-
 ####################
 # LSTM Autoencoder #
 ####################      
