@@ -138,7 +138,8 @@ class LSTM_AE(nn.Module):
     def decode(self, x):
         self.eval()
         decoded = self.decoder(x)
-        return decoded
+        squeezed_decoded = decoded.squeeze()
+        return squeezed_decoded
     
     def load(self, PATH):
         """
