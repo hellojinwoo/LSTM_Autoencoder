@@ -1,6 +1,6 @@
-# sequitur
+# TorchCoder
 
-`sequitur` is a Recurrent Autoencoder (RAE) for sequence data that works out-of-the-box. It's easy to configure and only takes one line of code to use.
+`TorchCoder` is a Long Short-Term Memory(LSTM) Autoencoder for sequential data. It is easy to configure and only takes one line of code to use.
 
 ```python
 from sequitur import QuickEncode
