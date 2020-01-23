@@ -26,8 +26,9 @@ def prepare_dataset(sequential_data) :
         data_in_tensor = torch.tensor(sequential_data, dtype = torch.float)
         unsqueezed_data = data_in_tensor.unsqueeze(2)
         
-    seq_len = unsqueezed_data[1]
-    no_features = unsqueezed_data[2]
+    seq_len = unsqueezed_data.shape[1]
+    no_features = unsqueezed_data.shape[2] 
+    # shape[0] is the number of batches
     
     return unsqueezed_data, seq_len, no_features
 
