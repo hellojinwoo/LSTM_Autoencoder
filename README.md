@@ -1,14 +1,16 @@
 # TorchCoder
 
-__`TorchCoder`__ is a Long Short-Term Memory(LSTM) Autoencoder for sequential data. It is easy to configure and only takes one line of code to use.
+__`TorchCoder`__ is a PyTorch based autoencoder for sequential data, currently supporting only Long Short-Term Memory(LSTM) autoencoder. It is easy to configure and only takes one line of code to use.
 
+## Example
 ```python
-from sequitur import QuickEncode
+from TorchCoder import QuickEncode
 
 sequences = [[1,2,3,4], [5,6,7,8], [9,10,11,12]]
-encoder, decoder, embeddings, f_loss  = QuickEncode(sequences, embedding_dim=2)
+encoded, decoded, final_loss  = QuickEncode(sequences, embedding_dim=2)
 
-encoder([13,14,15,16]) # => [0.19, 0.84]
+encoded
+>> 
 ```
 
 `sequitur` will learn how to represent sequences of any length as lower-dimensional, fixed-size vectors. This can be useful for finding patterns among sequences, clustering, converting sequences into inputs for a machine learning algorithm, and dimensionality reduction.
