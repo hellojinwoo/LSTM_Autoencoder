@@ -1,4 +1,5 @@
 # Standard Library
+import os
 import pandas as pd
 import numpy as np
 
@@ -9,6 +10,14 @@ from torch.nn import CrossEntropyLoss, MSELoss
 
 # Local Modules
 from .autoencoders import LSTM_AE
+
+
+###############
+# GPU Setting #
+###############
+os.environ["CUDA_VISIBLE_DEVICES"]="0"   # comment this line if you want to use all of your GPUs
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda:0" if use_cuda else "cpu")
 
 
 ####################
@@ -53,19 +62,4 @@ def QuickEncode(input_data,
     embedded_points = model.encode(refined_input_data)
     decoded_points = model.decode(embedded_points)
 
-    return embedded_points, decoded_points, final_loss
-
-if __name__ == "__main__":
-    sequences = [[1, 4, 12, 13], [9, 6, 2, 1], [3, 3, 14, 11]]
-    encoder, decoder, embeddings, f_loss = QuickEncode(
-        sequences,
-        embedding_dim=2,
-        logging=True
-    )
-
-    test_encoding = encoder(torch.tensor([[4.0], [5.0], [6.0], [7.0]]))
-    test_decoding = decoder(test_encoding)
-
-    print()
-    print(test_encoding)
-    print(test_decoding)
+    return embedded_points.cpu().data, decoded_points.cpu().data, final_loss
