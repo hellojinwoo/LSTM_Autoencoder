@@ -4,13 +4,21 @@ __`TorchCoder`__ is a PyTorch based autoencoder for sequential data, currently s
 
 ## Example
 ```python
-from TorchCoder import QuickEncode
+from TorchCoder import *
 
-sequences = [[1,2,3,4], [5,6,7,8], [9,10,11,12]]
+sequences = [[1,2,3,4],
+             [5,6,7,8], 
+             [9,10,11,12]]
 encoded, decoded, final_loss  = QuickEncode(sequences, embedding_dim=2)
 
 encoded
->> 
+>> tensor([[ 0.9282,  0.1928],
+           [ 0.4378,  0.9898],
+           [-0.9958,  0.9990]])
+decoded
+>> tensor([[ 1.0006,  1.9668,  2.9818,  3.9702],
+           [ 4.9706,  6.0296,  6.9568,  7.9714],
+           [ 8.9111, 10.6770, 11.0999, 11.2257]])
 ```
 
 `sequitur` will learn how to represent sequences of any length as lower-dimensional, fixed-size vectors. This can be useful for finding patterns among sequences, clustering, converting sequences into inputs for a machine learning algorithm, and dimensionality reduction.
