@@ -8,7 +8,7 @@ from torch.autograd import Variable
 from torch.nn import CrossEntropyLoss, MSELoss
 
 # Local Modules
-from .autoencoders import RAE, SAE
+from .autoencoders import LSTM_AE
 
 
 ####################
