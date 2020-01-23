@@ -124,7 +124,11 @@ class LSTM_AE(nn.Module):
         # load the last checkpoint with the best model
         self.load_state_dict(torch.load('./checkpoint.pt'))
         
-        return loss
+        # to check the final_loss
+        encoded, decoded = self(x)
+        final_loss = criterion(decoded , x).item()
+        
+        return final_loss
     
     def encode(self, x):
         self.eval()
