@@ -55,8 +55,7 @@ def QuickEncode(input_data,
     
     refined_input_data, seq_len, no_features = prepare_dataset(input_data)
     model = LSTM_AE(seq_len, no_features, embedding_dim, learning_rate, every_epoch_print, epochs, patience, max_grad_norm)
-    temp_final_loss = model.fit(refined_input_data)
-    final_loss = temp_final_loss.item()
+    final_loss = model.fit(refined_input_data)
     
     # recording_results
     embedded_points = model.encode(refined_input_data)
