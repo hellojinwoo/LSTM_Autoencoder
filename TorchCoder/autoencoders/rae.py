@@ -14,157 +14,139 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"   # comment this line if you want to use 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
+####################
+# LSTM Autoencoder #
+####################      
+# code inspired by  https://github.com/shobrook/sequitur/blob/master/sequitur/autoencoders/rae.py
+# annotation sourced by  ttps://pytorch.org/docs/stable/nn.html#torch.nn.LSTM        
 
-##################
-# Early Stopping #
-##################
-# source : https://github.com/Bjarten/early-stopping-pytorch
-
-class EarlyStopping:
-    """Early stops the training if validation loss doesn't improve after a given patience."""
-    def __init__(self, patience=20, verbose=False, delta= -0.00001):
-        """
-        Args:
-            patience (int): How long to wait after last time validation loss improved.
-                            Default: 7
-            verbose (bool): If True, prints a message for each validation loss improvement. 
-                            Default: False
-            delta (float): Minimum change in the monitored quantity to qualify as an improvement.
-                            Default: 0
-        """
-        self.patience = patience
-        self.verbose = verbose
-        self.counter = 0
-        self.best_score = None
-        self.early_stop = False
-        self.val_loss_min = np.Inf
-        self.delta = delta
-
-    def __call__(self, val_loss, model):
-        score = -val_loss
-
-        if self.best_score is None:
-            self.best_score = score
-            self.save_checkpoint(val_loss, model)
-        elif score < self.best_score - self.delta:
-            self.counter += 1
-            if self.verbose:
-                print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
-            if self.counter >= self.patience:
-                print(f"Early Stopping activated. Final validation loss : {self.val_loss_min:.7f}")
-                self.early_stop = True
-        # if the current score does not exceed the best scroe, run the codes following below
-        else:  
-            self.best_score = score
-            self.save_checkpoint(val_loss, model)
-            self.counter = 0
-
-    def save_checkpoint(self, val_loss, model):
-        '''Saves model when validation loss decrease.'''
-        if self.verbose:
-            print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
-        torch.save(model.state_dict(), './checkpoint.pt')
-        self.val_loss_min = val_loss
-
-
-
+# (1) Encoder
 class Encoder(nn.Module):
-    def __init__(self, seq_len, num_features, embedding_dim=64):
-        super(Encoder, self).__init__()
-
-        self.seq_len, self.num_features = seq_len, num_features
-        self.embedding_dim, self.hidden_dim = embedding_dim, 2 * embedding_dim
-
-        self.rnn1 = nn.LSTM(
-            input_size=num_features,
-            hidden_size=self.hidden_dim,
-            num_layers=1,
+    def __init__(self, seq_len, no_features, embedding_size):
+        super().__init__()
+        
+        self.seq_len = seq_len
+        self.no_features = no_features    # The number of expected features(= dimension size) in the input x
+        self.embedding_size = embedding_size   # the number of features in the embedded points of the inputs' number of features
+        self.hidden_size = (2 * embedding_size)  # The number of features in the hidden state h
+        self.LSTM1 = nn.LSTM(
+            input_size = no_features,
+            hidden_size = embedding_size,
+            num_layers = 1,
             batch_first=True
         )
-        self.rnn2 = nn.LSTM(
-            input_size=self.hidden_dim,
-            hidden_size=embedding_dim,
-            num_layers=1,
-            batch_first=True
-        )
-
+        
     def forward(self, x):
-        x = x.reshape((1, self.seq_len, self.num_features))
-
-        x, (hidden_n, cell_n) = self.rnn1(x)
-        x, (hidden_n, cell_n) = self.rnn2(x)
-
-        return hidden_n.reshape((1, self.embedding_dim))
-
-
+        # Inputs: input, (h_0, c_0). -> If (h_0, c_0) is not provided, both h_0 and c_0 default to zero.
+        x, (hidden_state, cell_state) = self.LSTM1(x)  
+        last_lstm_layer_hidden_state = hidden_state[-1,:,:]
+        return last_lstm_layer_hidden_state
+    
+    
+# (2) Decoder
 class Decoder(nn.Module):
-    def __init__(self, seq_len, input_dim=64, output_dim=1):
-        super(Decoder, self).__init__()
+    def __init__(self, seq_len, no_features, output_size):
+        super().__init__()
 
-        self.seq_len, self.input_dim = seq_len, input_dim
-        self.hidden_dim, self.output_dim = 2 * input_dim, output_dim
-
-        self.rnn1 = nn.LSTM(
-            input_size=input_dim,
-            hidden_size=input_dim,
-            num_layers=1,
-            batch_first=True
-        )
-        self.rnn2 = nn.LSTM(
-            input_size=input_dim,
-            hidden_size=self.hidden_dim,
-            num_layers=1,
-            batch_first=True
+        self.seq_len = seq_len
+        self.no_features = no_features
+        self.hidden_size = (2 * no_features)
+        self.output_size = output_size
+        self.LSTM1 = nn.LSTM(
+            input_size = no_features,
+            hidden_size = self.hidden_size,
+            num_layers = 1,
+            batch_first = True
         )
 
-        # self.perceptrons = nn.ModuleList()
-        # for _ in range(seq_len):
-        #     self.perceptrons.append(nn.Linear(self.hidden_dim, output_dim))
-
-        self.dense_layers = torch.rand(
-            (self.hidden_dim, output_dim),
-            dtype=torch.float,
-            requires_grad=True
-        )
-
+        self.fc = nn.Linear(self.hidden_size, output_size)
+        
     def forward(self, x):
-        x = x.repeat(self.seq_len, 1)
-        x = x.reshape((1, self.seq_len, self.input_dim))
-
-        x, (hidden_n, cell_n) = self.rnn1(x)
-        x, (hidden_n, cell_n) = self.rnn2(x)
-        x = x.reshape((self.seq_len, self.hidden_dim))
-
-        # output_seq = torch.empty(
-        #     self.seq_len,
-        #     self.output_dim,
-        #     dtype=torch.float
-        # )
-        # for index, perceptron in zip(range(self.seq_len), self.perceptrons):
-        #     output_seq[index] = perceptron(x[index])
-        #
-        # return output_seq
-
-        return torch.mm(x, self.dense_layers)
-
-
-#########
-# EXPORTS
-#########
-
-
-class RAE(nn.Module):
-    def __init__(self, seq_len, num_features, embedding_dim=64):
-        super(RAE, self).__init__()
-
-        self.seq_len, self.num_features = seq_len, num_features
+        x = x.unsqueeze(1).repeat(1, self.seq_len, 1)
+        x, (hidden_state, cell_state) = self.LSTM1(x)
+        x = x.reshape((-1, self.seq_len, self.hidden_size))
+        out = self.fc(x)
+        return out
+    
+# (3) Autoencoder : putting the encoder and decoder together
+class LSTM_AE(nn.Module):
+    def __init__(self, seq_len, no_features, embedding_dim, learning_rate, every_epoch_print, epochs, patience, max_grad_norm):
+        super().__init__()
+        
+        self.seq_len = seq_len
+        self.no_features = no_features
         self.embedding_dim = embedding_dim
 
-        self.encoder = Encoder(seq_len, num_features, embedding_dim)
-        self.decoder = Decoder(seq_len, embedding_dim, num_features)
-
+        self.encoder = Encoder(self.seq_len, self.no_features, self.embedding_dim)
+        self.decoder = Decoder(self.seq_len, self.embedding_dim, self.no_features)
+        
+        self.epochs = epochs
+        self.learning_rate = learning_rate
+        self.patience = patience
+        self.max_grad_norm = max_grad_norm
+        self.every_epoch_print = every_epoch_print
+    
     def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
+        torch.manual_seed(0)
+        encoded = self.encoder(x)
+        decoded = self.decoder(encoded)
+        return encoded, decoded
+    
+    def fit(self, x):
+        """
+        trains the model's parameters over a fixed number of epochs, specified by `n_epochs`, as long as the loss keeps decreasing.
+        :param dataset: `Dataset` object
+        :param bool save: If true, dumps the trained model parameters as pickle file at `dload` directory
+        :return:
+        """
+        optimizer = torch.optim.Adam(self.parameters(), lr = self.learning_rate)
+        criterion = nn.MSELoss(reduction='mean')
+        self.train()
+        # initialize the early_stopping object
+        early_stopping = EarlyStopping(patience=self.patience, verbose=False)
 
-        return x
+        for epoch in range(1 , self.epochs+1):
+            # updating early_stopping's epoch
+            early_stopping.epoch = epoch        
+            optimizer.zero_grad()
+            encoded, decoded = self(x)
+            loss = criterion(decoded , x)
+            
+            # early_stopping needs the validation loss to check if it has decresed, 
+            # and if it has, it will make a checkpoint of the current model
+            early_stopping(loss, self)
+            
+            if early_stopping.early_stop:
+                break
+            
+            # Backward pass
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), max_norm = self.max_grad_norm)
+            optimizer.step()
+            
+            if epoch % self.every_epoch_print == 0:
+                print(f"epoch : {epoch}, loss_mean : {loss.item():.7f}")
+        
+        # load the last checkpoint with the best model
+        self.load_state_dict(torch.load('./checkpoint.pt'))
+        
+        return loss
+    
+    def encode(self, x):
+        self.eval()
+        encoded = self.encoder(x)
+        return encoded
+    
+    def decode(self, x):
+        self.eval()
+        decoded = self.decoder(x)
+        return decoded
+    
+    def load(self, PATH):
+        """
+        Loads the model's parameters from the path mentioned
+        :param PATH: Should contain pickle file
+        :return: None
+        """
+        self.is_fitted = True
+        self.load_state_dict(torch.load(PATH))
