@@ -61,7 +61,7 @@ __1. `fit` as a method__
 
 __2. Adding `early_stopping`__
   - If the training error does not decrease much, the training stops. 
-  - [Notice] Need to consider using the MSE of `validation data` to decide when to stop, instead of `training data`.
+  - __[Notice]__ Need to consider using the MSE of `validation data` to decide when to stop, instead of `training data`.
 
 __3. Adding `gradient_clipping`__
   - Without gradient clipping, the gradient explodes sometimes while training the neural network.
