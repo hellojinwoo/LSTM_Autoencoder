@@ -19,29 +19,24 @@ decoded
 >> tensor([[ 1.0006,  1.9668,  2.9818,  3.9702],
            [ 4.9706,  6.0296,  6.9568,  7.9714],
            [ 8.9111, 10.6770, 11.0999, 11.2257]])
+final_loss
+>> 0.09021145105361938
 ```
 
-`sequitur` will learn how to represent sequences of any length as lower-dimensional, fixed-size vectors. This can be useful for finding patterns among sequences, clustering, converting sequences into inputs for a machine learning algorithm, and dimensionality reduction.
-
-## Installation
-
-> Requires Python 3.X and PyTorch 1.2.X
-
-You can download a compiled binary [here](https://github.com/shobrook/sequitur/) or install `sequitur` with pip:
-
-`$ pip install sequitur`
+`TorchCoder` will learn how to represent sequences of any length in lower-dimensional, fixed-size vectors. This non-linear dimensionality reduction algorithm can be useful for finding patterns among sequences, clustering, and converting sequences into inputs for a machine learning algorithm.
 
 ## API
 
-#### `sequitur.QuickEncode(sequences, embedding_dim, logging=False, lr=1e-3, epochs=100)`
+#### `TorchCoder.QuickEncode(input_sequences, embedding_dim, learning_rate, every_epoch_print, epochs, patience, max_grad_norm)`
 
 Lets you train an autoencoder with just one line of code. This wraps a PyTorch implementation of an Encoder-Decoder architecture with an LSTM, making this optimal for sequences with long-term dependencies (e.g. time series data).
 
 **Parameters**
 
-- `sequences`: A list (or tensor) of shape `[num_seqs, seq_len, num_features]` representing your training set of sequences.
+- `input_sequences`: A list (or tensor) of shape `[num_seqs, seq_len, num_features]` representing your training set of sequences.
   - Each sequence should have the same length, `seq_len`, and contain a sequence of vectors of size `num_features`.
   - If `num_features=1`, then you can input a list of shape `[num_seqs, seq_len]` instead.
+  - __[Notice]__ Currently TorchCoder can take `[num_seqs, seq_len]` as an input. Soon to be fixed.
 - `embedding_dim`: Size of the vector encodings you want to create.
 - `logging`: Boolean for whether you want logging statements to be printed during training.
 - `lr`: Learning rate for the autoencoder.
