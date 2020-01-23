@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 import pandas as pd
+from .early_stopping import *
 from tqdm import tqdm_notebook as tqdm
 
 torch.manual_seed(0)
