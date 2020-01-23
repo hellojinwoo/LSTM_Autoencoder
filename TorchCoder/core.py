@@ -1,5 +1,6 @@
 # Standard Library
-from statistics import mean
+import pandas as pd
+import numpy as np
 
 # Third Party
 import torch
@@ -44,14 +45,14 @@ def QuickEncode(input_data,
     
     refined_input_data, seq_len, no_features = prepare_dataset(input_data)
     model = LSTM_AE(seq_len, no_features, embedding_dim, learning_rate, every_epoch_print, epochs, patience, max_grad_norm)
-    model.fit(refined_input_data, embedding_dim)
+    temp_final_loss = model.fit(refined_input_data)
+    final_loss = temp_final_loss.item()
     
     # recording_results
     embedded_points = model.encode(refined_input_data)
     decoded_points = model.decode(embedded_points)
-    f_loss = EarlyStopping.val_loss_min
 
-    return embedded_points, decoded_points, f_loss
+    return embedded_points, decoded_points, final_loss
 
 if __name__ == "__main__":
     sequences = [[1, 4, 12, 13], [9, 6, 2, 1], [3, 3, 14, 11]]
