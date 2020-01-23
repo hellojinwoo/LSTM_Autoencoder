@@ -38,36 +38,21 @@ Lets you train an autoencoder with just one line of code. This wraps a PyTorch i
   - If `num_features=1`, then you can input a list of shape `[num_seqs, seq_len]` instead.
   - __[Notice]__ Currently TorchCoder can take `[num_seqs, seq_len]` as an input. Soon to be fixed.
 - `embedding_dim`: Size of the vector encodings you want to create.
-- `logging`: Boolean for whether you want logging statements to be printed during training.
-- `lr`: Learning rate for the autoencoder.
-- `epochs`: Number of epochs to train for.
+- `learning_rate`: Learning rate for the autoencoder.
+- `every_epoch_print` : Deciding the size of N to print the loss every N epochs.
+- `epochs`: Total number of epochs to train for.
+- `patience` : Number of epochs to wait for if the loss does not decrease.
+- `max_grad_norm` : Maximum size for gradient used in gradient descent (gradient clipping). 
 
 **Returns**
 
-- `encoder`: The trained encoder as a PyTorch module.
-  - Takes as input a tensor of shape `[seq_len, num_features]` representing a sequence where each element is a vector of size `num_features`.
-- `decoder`: The trained decoder as a PyTorch module.
-  - Takes as input a tensor of shape `[embedding_dim]` representing an encoded sequence.
-- `embeddings`: A tensor of shape `[num_seqs, embedding_dim]` which holds the learned vector encodings of each sequence in the training set.
-- `f_loss`: The final mean squared error of the autoencoder on the training set.
-
-#### `sequitur.autoencoders.RAE(hyperparams)`
-
-To-Do.
-
-#### `sequitur.autoencoders.SAE(hyperparams)`
-
-To-Do.
-
-#### `sequitur.autoencoders.VAE(hyperparams)`
-
-To-Do.
+- `encoded`: The encoded vector (representation) of the `input_sequences`.
+- `decoded`: The decoded vector of encoded, which should be very close to the `input_sequences`.
+- `final_loss`: The final mean squared error of the autoencoder on the training set.
 
 ## Contributing
 
-`QuickEncode` is useful for rapid prototyping but doesn't give you much control over the model and training process. For that, you can import the RAE implementation itself from `sequitur.autoencoders`.
-
-`sequitur` not only implements an RAE but also a Stacked Autoencoder (SAE) and a WIP Variational Autoencoder (VAE). If you've implemented a sequence autoencoder, or know of an implementation, please feel free to add it to the codebase and open a pull request. With enough autoencoders, I can turn `sequitur` into a small PyTorch extension library.
+`QuickEncode` is useful for rapid prototyping but doesn't give you much control over the model and training process. For that, you can import the RAE implementation itself from `TorchCoder.autoencoders`.
 
 <!--Provide proof that it's generally effective-->
 
