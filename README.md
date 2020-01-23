@@ -1,6 +1,6 @@
 # TorchCoder
 
-`TorchCoder` is a Long Short-Term Memory(LSTM) Autoencoder for sequential data. It is easy to configure and only takes one line of code to use.
+__`TorchCoder`__ is a Long Short-Term Memory(LSTM) Autoencoder for sequential data. It is easy to configure and only takes one line of code to use.
 
 ```python
 from sequitur import QuickEncode
