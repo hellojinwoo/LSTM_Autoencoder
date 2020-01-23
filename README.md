@@ -50,11 +50,13 @@ Lets you train an autoencoder with just one line of code. This wraps a PyTorch i
 - `decoded`: The decoded vector of encoded, which should be very close to the `input_sequences`.
 - `final_loss`: The final mean squared error of the autoencoder on the training set.
 
-## Contributing
 
 `QuickEncode` is useful for rapid prototyping but doesn't give you much control over the model and training process. For that, you can import the RAE implementation itself from `TorchCoder.autoencoders`.
 
-<!--Provide proof that it's generally effective-->
+## The difference from `sequitur`
+
+1. `fit` as a method
+  - PyTorch modules usually have `fit` as a method of a neural network class. 
 
 <!-- https://github.com/szagoruyko/pytorchviz
 https://github.com/RobRomijnders/AE_ts
