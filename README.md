@@ -59,11 +59,11 @@ __1. `fit` as a method__
   - PyTorch users generally use `fit` as a method of a neural network class. 
   - `sequitur` has a 'train` as a function instead of a 'fit' method, I have changed it to the method.
 
-__2. Adding `early_stopping`__
+__2. Added `early_stopping`__
   - If the training error does not decrease much, the training stops. 
   - __[Notice]__ Need to consider using the MSE of `validation data` to decide when to stop, instead of `training data`.
 
-__3. Adding `gradient_clipping`__
+__3. Added `gradient_clipping`__
   - Without gradient clipping, the gradient explodes sometimes while training the neural network.
 
 <!-- https://github.com/szagoruyko/pytorchviz
