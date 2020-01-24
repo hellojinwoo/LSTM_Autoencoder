@@ -38,11 +38,11 @@ Lets you train an autoencoder with just one line of code. This wraps a PyTorch i
   - If `num_features=1`, then you can input a list of shape `[num_seqs, seq_len]` instead.
   - __[Notice]__ Currently TorchCoder can take `[num_seqs, seq_len]` as an input. Soon to be fixed.
 - `embedding_dim`: Size of the vector encodings you want to create.
-- `learning_rate`: Learning rate for the autoencoder.
-- `every_epoch_print` : Deciding the size of N to print the loss every N epochs.
-- `epochs`: Total number of epochs to train for.
-- `patience` : Number of epochs to wait for if the loss does not decrease.
-- `max_grad_norm` : Maximum size for gradient used in gradient descent (gradient clipping). 
+- `learning_rate`: Learning rate for the autoencoder. default = 1e-3
+- `every_epoch_print` : Deciding the size of N to print the loss every N epochs. default = 100
+- `epochs`: Total number of epochs to train for. default = 10000
+- `patience` : Number of epochs to wait for if the loss does not decrease. default = 20 
+- `max_grad_norm` : Maximum size for gradient used in gradient descent (gradient clipping). default = 0.005
 
 **Returns**
 
