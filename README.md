@@ -53,7 +53,7 @@ Lets you train an autoencoder with just one line of code. This wraps a PyTorch i
 
 `QuickEncode` is useful for rapid prototyping but doesn't give you much control over the model and training process. For that, you can import the RAE implementation itself from `TorchCoder.autoencoders`.
 
-## The difference from `sequitur`
+## The difference from the library [sequitur](https://github.com/shobrook/sequitur)
 
 __1. `fit` as a method__
   - PyTorch users generally use `fit` as a method of a neural network class. 
